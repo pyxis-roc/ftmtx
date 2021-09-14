@@ -36,24 +36,63 @@ class FeatureMatrix:
 
         self.edges.add((s, f))
 
+    def is_source_completed(self, src):
+        g = self.graph
+        n = self.src2nid[src]
+        return g.out_degree(n) == 0
+
+    def complete_source(self, src):
+        g = self.graph
+        n = self.src2nid[src]
+        ftnodes = list(g.successors(n))
+        g.remove_nodes_from(ftnodes)
+
+        for fn in ftnodes:
+            ft = self.nid2ft[fn]
+            del self.nid2ft[fn]
+            del self.ft2nid[ft]
+
+    def complete_feature(self, feature):
+        g = self.graph
+        n = self.ft2nid[feature]
+        g.remove_node(n)
+        del self.ft2nid[feature]
+        del self.nid2ft[n]
+
     def sources_for(self, feature):
         g = self.graph
         return [self.nid2src[x] for x in g.predecessors(self.ft2nid[feature])]
 
+    def features_for(self, source):
+        g = self.graph
+        return [self.nid2ft[x] for x in g.successors(self.src2nid[source])]
+
+    def rank_sources(self, ranking='weight'):
+        g = self.graph
+
+        if ranking == 'weight':
+            out = []
+            for n in g.nodes():
+                if g.out_degree(n) > 0:
+                    weight = sum([g.in_degree[f] for f in g.successors(n)])
+                    out.append((n, weight))
+
+            out = [(self.nid2src[n], weight) for (n, weight) in out]
+            out = sorted(out, key=lambda x: x[1])
+
+        return out
+
     def rank_features(self, ranking='degree'):
         g = self.graph
         fn = []
-        # for n in g.nodes():
-        #     if g.in_degree[n] > 0:
-        #         if n not in self.nid2ft:
-        #             import pdb
-        #             pdb.set_trace()
-        #         else:
-        #             fn.append((self.nid2ft[n], g.in_degree[n]))
 
-        fn = [(self.nid2ft[n], g.in_degree[n]) for n in g.nodes() if g.in_degree[n] > 0]
-        return sorted(fn, key=lambda x: x[1], reverse=True)
+        if ranking == 'degree':
+            fn = [(self.nid2ft[n], g.in_degree[n]) for n in g.nodes() if g.in_degree[n] > 0]
+            fn = sorted(fn, key=lambda x: x[1], reverse=True)
+        else:
+            raise NotImplementedError(f"Ranking {ranking} is not implemented.")
 
+        return fn
     @property
     def graph(self):
         if self._g is None:
