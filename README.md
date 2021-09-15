@@ -5,7 +5,7 @@ bipartite graph.
 
 ## Installation
 
-This package is in heavy development:
+This package is in heavy development, so install using `develop`:
 
 ```
 python3 setup.py develop
@@ -29,14 +29,57 @@ a JSON file, listing the edges of a source:
   ...
 ```
 
+## Preparing feature matrix files
+
+To prepare a feature matrix JSON file from a flat text file containing
+a list of features, use the `txt2features.py` script.
+
+## Combining feature matrix files
+
+Use the `ftmtx_combine.py` script to combine different JSON files into
+a single file for analysis.
+
 ## Analyzing a feature matrix
 
 To analyze a feature matrix represented as a JSON file, use the
 `ftmtx.py` script.
 
+### Feature analysis
+
 ```
-ftmtx.py ftrmat.json
+ftmtx.py ftrmat.json features
 ```
 
 This will print out the features in descending frequency-of-occurrence
-order, along with 3 sources that use this feature.
+order, along with sources that use this feature.
+
+### Source analysis
+
+```
+ftmtx.py ftrmat.json sources
+```
+
+This will print out the sources in increasing order of "feature
+weight". The feature weight captures the number of sources that also
+use the features used by a source.
+
+### Completion analysis
+
+```
+ftmtx.py ftrmat.json complete_ft|complete_src
+```
+
+These two options will print out a list of features to be implemented
+in order to reach "completion" of sources. The `complete_ft` prints
+out features in order of increasing frequency. The `complete_src`
+prints out features present in sources of high shared weight.
+
+Empirically, the `complete_ft` order of feature completion leads to a
+higher number of completed _sources_ in a given amount of time,
+compared to `complete_src`.
+
+The `--cs` option provides a feature matrix whose features are deemed
+completed.
+
+
+
