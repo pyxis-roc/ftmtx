@@ -81,5 +81,9 @@ compared to `complete_src`.
 The `--cs` option provides a feature matrix whose features are deemed
 completed.
 
+## Searching feature matrix files
+
+The `ftsearch.py` script allows search feature matrix JSON files for
+sources that contain a list of features, including excluding features.
 
 

@@ -5,5 +5,6 @@ setup(name='featurematrix',
       packages=find_packages(),
       scripts=['bin/ftmtx.py',
                'bin/ftmtx_combine.py',
-               'bin/txt2features.py']
+               'bin/txt2features.py',
+               'bin/ftsearch.py']
 )
