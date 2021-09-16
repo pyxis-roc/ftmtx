@@ -8,13 +8,23 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(description="Combine JSON feature matrix files")
     p.add_argument("ftrmatjson", nargs="+", help="A JSON file contain a feature matrix")
     p.add_argument("-o", dest="output", help="Output JSON file")
+    p.add_argument("-l", dest="list", action="store_true", help="Input files contain lists of JSON files to be combined")
 
     args = p.parse_args()
     out = []
 
-    for f in args.ftrmatjson:
-        bg = json.load(open(f, "r"))
-        out.extend(bg)
+    if args.list:
+        for f in args.ftrmatjson:
+            with open(f, "r") as ff:
+                for lf in ff:
+                    lf = lf.strip()
+                    with open(lf, "r") as flf:
+                        bg = json.load(flf)
+                        out.extend(bg)
+    else:
+        for f in args.ftrmatjson:
+            bg = json.load(open(f, "r"))
+            out.extend(bg)
 
     if args.output is None:
         o = sys.stdout
