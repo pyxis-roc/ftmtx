@@ -59,7 +59,10 @@ if __name__ == "__main__":
 
             for f in mat2.features:
                 if f in mat.features:
-                    mat.complete_feature(f)
+                    b = mat.complete_feature(f)
+                    for bb in b:
+                        print("\t", bb)
+        print("===")
 
     if args.rank == 'features':
         f = mat.rank_features()
