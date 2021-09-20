@@ -63,13 +63,16 @@ if __name__ == "__main__":
                     for bb in b:
                         print("\t", bb)
         print("===")
+        print(mat)
 
     if args.rank == 'features':
         f = mat.rank_features()
         for ft, count in f:
             print(ft, count)
-            for s in mat.sources_for(ft):
+            for i, s in enumerate(mat.sources_for(ft)):
                 print("\t", s)
+                if i > 10: break
+
     elif args.rank == 'sources':
         s = mat.rank_sources()
         for src, count in s:
