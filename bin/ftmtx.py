@@ -42,7 +42,7 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(description="Process a JSON feature matrix file")
     p.add_argument("ftrmatjson", help="A JSON file contain a feature matrix")
     p.add_argument("rank", choices=["features", "sources", "complete_ft", "complete_src"])
-    p.add_argument("--cs", dest="completed_sources", help="JSON file containing list of sources whose features have been completed (in same format as feature matrix)")
+    p.add_argument("--cs", dest="completed_sources", help="JSON file containing list of sources whose features have been completed (in same format as feature matrix)", action="append", default=[])
 
     args = p.parse_args()
 
@@ -52,16 +52,19 @@ if __name__ == "__main__":
 
     print(mat)
 
+    completed = set()
     if args.completed_sources:
-        with open(args.completed_sources, "r") as f:
-            cs = json.load(fp=f)
-            mat2 = fm.FeatureMatrix.from_array(cs)
+        for csf in args.completed_sources:
+            with open(csf, "r") as f:
+                cs = json.load(fp=f)
+                mat2 = fm.FeatureMatrix.from_array(cs)
 
-            for f in mat2.features:
-                if f in mat.features:
-                    b = mat.complete_feature(f)
-                    for bb in b:
-                        print("\t", bb)
+                for f in mat2.features:
+                    if f in mat.features:
+                        b = mat.complete_feature(f)
+                        completed |= set(b)
+                        for bb in b:
+                            print("\t", bb)
         print("===")
         print(mat)
 
@@ -76,9 +79,10 @@ if __name__ == "__main__":
     elif args.rank == 'sources':
         s = mat.rank_sources()
         for src, count in s:
-            print(src, count)
-            for f in mat.features_for(src):
-                print("\t", f)
+            if src not in completed:
+                print(src, count)
+                for f in mat.features_for(src):
+                    print("\t", f)
     elif args.rank == 'complete_ft':
         f = mat.rank_features()
         complete_features(mat, f)
