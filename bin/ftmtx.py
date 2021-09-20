@@ -43,6 +43,7 @@ if __name__ == "__main__":
     p.add_argument("ftrmatjson", help="A JSON file contain a feature matrix")
     p.add_argument("rank", choices=["features", "sources", "complete_ft", "complete_src"])
     p.add_argument("--cs", dest="completed_sources", help="JSON file containing list of sources whose features have been completed (in same format as feature matrix)", action="append", default=[])
+    p.add_argument("--csnames", dest="completed_sources_names", help="FILE containing list of completed sources")
 
     args = p.parse_args()
 
@@ -67,6 +68,21 @@ if __name__ == "__main__":
                             print("\t", bb)
         print("===")
         print(mat)
+
+    if args.completed_sources_names:
+        with open(args.completed_sources_names, "r") as f:
+            for l in f:
+                ls = l.strip()
+                if ls != '':
+                    if ls not in mat.sources:
+                        print("WARNING: {ls} not found")
+                    else:
+                        mat.complete_source(ls)
+                        completed.add(ls)
+
+        print("===")
+        print(mat)
+
 
     if args.rank == 'features':
         f = mat.rank_features()
