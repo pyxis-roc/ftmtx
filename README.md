@@ -87,3 +87,9 @@ The `ftsearch.py` script allows search feature matrix JSON files for
 sources that contain a list of features, including excluding features.
 
 
+## Copyright
+
+SPDX-FileCopyrightText: 2021,2023 University of Rochester
+
+SPDX-License-Identifier: MIT
+
